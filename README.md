@@ -47,6 +47,6 @@
 
 
 ### 六. 展望
-性能上的优化
-实现一个课表数据分析库（配合CourseTableView使用，快速搭建一个对应学校的课程表，或者直接集成在CourseTableView中）
-更多的UI自定义
+- 能上的优化
+- 实现一个课表数据分析库（配合CourseTableView使用，快速搭建一个对应学校的课程表，或者直接集成在CourseTableView中）
+- 更多的UI自定义
