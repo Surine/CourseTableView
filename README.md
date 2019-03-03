@@ -2,7 +2,7 @@
 
 > CourseTableView是一个开源的，简洁的，支持多种自定义属性的Android课程表控件，由于开发周期较短，所以目前仅限于实现，后期将会逐步优化性能
 
-> 详细文档请参考[CourseTableView](https://www.yuque.com/hysteria/coursetableview/rl0p36)
+> 详细文档请参考[CourseTableView](https://www.yuque.com/hysteria/coursetableview)
 
 
 ###  一 . 实现功能
