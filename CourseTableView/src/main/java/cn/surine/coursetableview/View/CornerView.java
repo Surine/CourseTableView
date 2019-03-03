@@ -15,7 +15,7 @@ import android.widget.FrameLayout;
  * 参考：https://blog.csdn.net/wei1583812/article/details/53130637
  */
 
-public class CornerView extends FrameLayout {
+class CornerView extends FrameLayout {
 
     public CornerView(Context context, AttributeSet attrs) {
         super(context, attrs);

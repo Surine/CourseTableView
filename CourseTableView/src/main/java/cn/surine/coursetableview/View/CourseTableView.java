@@ -111,8 +111,9 @@ public class CourseTableView extends LinearLayout {
         mDataConfig = dataConfig;
         //数据加载
         //如果侧边栏未加载则进行加载
-        if(isSectionViewInit)
+        if(!isSectionViewInit){
             updateSectionView();
+        }
 
         //顶部栏要跟着更新时间数据
         updateWeekView();
@@ -363,7 +364,7 @@ public class CourseTableView extends LinearLayout {
     /*初始化*/
     private void init(Context context) {
         mContext = context;
-        LayoutInflater.from(context).inflate(R.layout.main,this);
+        LayoutInflater.from(context).inflate(R.layout.main_course_view,this);
         mWeekView = findViewById(R.id.weekView);
         mSectionView = findViewById(R.id.sectionView);
         weekPanel1 = findViewById(R.id.weekPanel_1);
@@ -393,6 +394,7 @@ public class CourseTableView extends LinearLayout {
 
     //加载侧边栏
     private void updateSectionView() {
+        Log.d("TAG","加载侧边");
         isSectionViewInit = false;
         //初始化上课节数视图
         initSectionView(mUiConfig.getMaxSection());
