@@ -38,7 +38,7 @@ V1.0.0 基础实现
 - 许可：Apache2.0
 - 开发者：Surine
 - 博客：https://blog.surine.cn
-- 其他类似项目（https://github.com/surine）：
+- 其他类似项目（https://github.com/surine）
   1. 小天盒子 -  课程表实例（课程表控件非本控件，而是使用RecycleView实现的，目前抽离起来比较困难，而且较难自由定制，于是才萌生了要写这个控件的想法）
   2. Sutils - Android开源工具类包，第一个开源的库，水平有限，实现很低级，大神勿喷，
 
