@@ -16,7 +16,10 @@ import android.widget.TextView;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import cn.surine.coursetableview.Pojo.BCourse;
 import cn.surine.coursetableview.R;
@@ -245,7 +248,6 @@ public class CourseTableView extends LinearLayout {
             layoutList.get(j).removeAllViews();
         }
 
-        int itemPosition;
         List<BCourse> mBcourses = mDataConfig.getCourseList();
         int courseSize = mBcourses.size();
         if(courseSize <= 0){
@@ -267,33 +269,50 @@ public class CourseTableView extends LinearLayout {
             throw new  IllegalArgumentException("currentWeek is greater than maxweek");
         }
 
-        for (int i = 0; i < courseSize; i++) {
+        loadData(mBcourses);
+
+
+        //课表显示与隐藏
+        if(mUiConfig.getMaxClassDay() == 5){
+            layoutList.get(5).setVisibility(GONE);
+            layoutList.get(6).setVisibility(GONE);
+        }else{
+            layoutList.get(5).setVisibility(VISIBLE);
+            layoutList.get(6).setVisibility(VISIBLE);
+        }
+    }
+
+    private void loadData(List<BCourse> mBcourses) {
+        int itemPosition;
+
+        //height flag position,day flag position
+        HashMap<String,Integer> map = new HashMap<>();
+
+        for(int i = 0; i < mBcourses.size(); i++){
             itemPosition = i;
-            BCourse bCourse = mBcourses.get(i);
             boolean isCurWeek;
-            //对象判空
-            if(bCourse == null)
-                return;
-
-            RelativeLayout curDayLayout = layoutList.get(bCourse.getDay() - 1);
-
-            //课程是否在本周山
-            isCurWeek = bCourse.getWeek().contains(mDataConfig.getCurrentWeek());
-
-            //判断课程位置的合法性
+            BCourse bCourse = mBcourses.get(i);
+            if(bCourse == null){
+                continue;
+            }
+            //check the position
             if(bCourse.getSectionStart() + bCourse.getSectionContinue() > mUiConfig.getMaxSection() + 1){
                 throw new IllegalArgumentException("out of the section view limit");
             }
+            //is this week
+            int thisDay = bCourse.getDay() - 1;
+            RelativeLayout curDayLayout = layoutList.get(thisDay);
+            isCurWeek = bCourse.getWeek().contains(mDataConfig.getCurrentWeek());
+            //first to load curweek class
+            if(!isCurWeek){
+                continue;
+            }
 
             CornerView frameLayout = new CornerView(mContext, mUiConfig.getItemCornerRadius());
-
             TextView tv = new TextView(mContext);
-
-            //课程高度 = 课持续节数 * 小课课高度 + 课内间隔数 * padding
+            //course height = class continue * little section height + gap * padding
             int bCourseHeight = bCourse.getSectionContinue() * mUiConfig.getSectionHeight()
                     + (bCourse.getSectionContinue() - 1) * mUiConfig.getItemTopMargin();
-
-
             LinearLayout.LayoutParams flp = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     bCourseHeight);
@@ -301,24 +320,14 @@ public class CourseTableView extends LinearLayout {
             LinearLayout.LayoutParams tlp = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.MATCH_PARENT);
-
-            //课表间距
+            //class gap
             int topMargin = (bCourse.getSectionStart() - 1) * mUiConfig.getSectionHeight()
                     + bCourse.getSectionStart() * mUiConfig.getItemTopMargin();
             flp.setMargins(0, topMargin, 0, 0);
-
-            //是否本周上
-            if(isCurWeek){
-                frameLayout.setBackgroundColor(bCourse.getColor());
-                tv.setTextColor(Color.WHITE);
-                tv.setText(bCourse.getName() + "\n @" + bCourse.getPosition());
-            }
-            else{
-                frameLayout.setBackgroundColor(mUiConfig.getItemNotCurWeekCourseColor());
-                tv.setTextColor(Color.BLACK);
-                tv.setText(bCourse.getName() + "\n @" + bCourse.getPosition()+"\n[非本周]");
-            }
-
+            //is cur week
+            frameLayout.setBackgroundColor(bCourse.getColor());
+            tv.setTextColor(Color.WHITE);
+            tv.setText(bCourse.getName() + "\n @" + bCourse.getPosition());
             tv.setLayoutParams(tlp);
             tv.setGravity(Gravity.CENTER);
             tv.setTextSize(mUiConfig.getItemTextSize());
@@ -328,16 +337,15 @@ public class CourseTableView extends LinearLayout {
 
             frameLayout.setPadding(2, 2, 2, 2);
             curDayLayout.setPadding(mUiConfig.getItemSideMargin(),0,mUiConfig.getItemSideMargin(),0);
+            //add to current day view
+            curDayLayout.addView(frameLayout);
 
-            //显示非本周上的课
-            if(mUiConfig.isShowCurWeekCourse()){
-                curDayLayout.addView(frameLayout);
-            }else{
-                //不显示非本周上的课
-                //如果这节课是在本周上，就加上，不是在本周上，就不加
-                if(isCurWeek){
-                    curDayLayout.addView(frameLayout);
-                }
+            int sectionStart = bCourse.getSectionStart();
+            int sectionContinue = bCourse.getSectionContinue();
+
+            while(sectionContinue > 0){
+                map.put((sectionStart + sectionContinue - 1)+"/"+thisDay,0);
+                sectionContinue--;
             }
 
             final int finalItemPostion = itemPosition;
@@ -346,19 +354,86 @@ public class CourseTableView extends LinearLayout {
             frameLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if(mClickCourseItemListener == null){
+                        return;
+                    }
                     mClickCourseItemListener.onClickItem(mDataConfig.getCourseList(), finalItemPostion,tempIsCurWeek);
                 }
             });
-
-            //课表显示与隐藏
-            if(mUiConfig.getMaxClassDay() == 5){
-                layoutList.get(5).setVisibility(GONE);
-                layoutList.get(6).setVisibility(GONE);
-            }else{
-                layoutList.get(5).setVisibility(VISIBLE);
-                layoutList.get(6).setVisibility(VISIBLE);
-            }
         }
+
+        //not show non cur week
+        if(!mUiConfig.isShowCurWeekCourse()){
+            return;
+        }
+
+
+        for(int i = 0; i < mBcourses.size(); i++){
+            itemPosition = i;
+            boolean isCurWeek;
+            BCourse bCourse = mBcourses.get(i);
+            if(bCourse == null){
+                continue;
+            }
+            //check the position
+            if(bCourse.getSectionStart() + bCourse.getSectionContinue() > mUiConfig.getMaxSection() + 1){
+                throw new IllegalArgumentException("out of the section view limit");
+            }
+            //is this week
+            int thisDay = bCourse.getDay() - 1;
+            RelativeLayout curDayLayout = layoutList.get(thisDay);
+            isCurWeek = bCourse.getWeek().contains(mDataConfig.getCurrentWeek());
+            //first to load curweek class
+            if(isCurWeek){
+                continue;
+            }
+            //if this position has a course,skip it
+            if(map.containsKey(bCourse.getSectionStart()+"/"+thisDay)){
+                continue;
+            }
+
+            CornerView frameLayout = new CornerView(mContext, mUiConfig.getItemCornerRadius());
+            TextView tv = new TextView(mContext);
+            //course height = class continue * little section height + gap * padding
+            int bCourseHeight = bCourse.getSectionContinue() * mUiConfig.getSectionHeight()
+                    + (bCourse.getSectionContinue() - 1) * mUiConfig.getItemTopMargin();
+            LinearLayout.LayoutParams flp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    bCourseHeight);
+
+            LinearLayout.LayoutParams tlp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT);
+            //class gap
+            int topMargin = (bCourse.getSectionStart() - 1) * mUiConfig.getSectionHeight()
+                    + bCourse.getSectionStart() * mUiConfig.getItemTopMargin();
+            flp.setMargins(0, topMargin, 0, 0);
+            //is non cur week
+            frameLayout.setBackgroundColor(mUiConfig.getItemNotCurWeekCourseColor());
+            tv.setTextColor(Color.BLACK);
+            tv.setText(bCourse.getName() + "\n @" + bCourse.getPosition()+"\n[非本周]");
+            tv.setLayoutParams(tlp);
+            tv.setGravity(Gravity.CENTER);
+            tv.setTextSize(mUiConfig.getItemTextSize());
+            frameLayout.setLayoutParams(flp);
+            frameLayout.addView(tv);
+            frameLayout.setPadding(2, 2, 2, 2);
+            curDayLayout.setPadding(mUiConfig.getItemSideMargin(),0,mUiConfig.getItemSideMargin(),0);
+            curDayLayout.addView(frameLayout);
+            final int finalItemPostion = itemPosition;
+            final boolean tempIsCurWeek = isCurWeek;
+            //单击监听
+            frameLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(mClickCourseItemListener == null){
+                        return;
+                    }
+                    mClickCourseItemListener.onClickItem(mDataConfig.getCourseList(), finalItemPostion,tempIsCurWeek);
+                }
+            });
+        }
+
     }
 
     /*初始化*/
