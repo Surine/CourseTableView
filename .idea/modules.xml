@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/AndroidStudioProjects-CourseTableView.iml" filepath="$PROJECT_DIR$/AndroidStudioProjects-CourseTableView.iml" />
       <module fileurl="file://$PROJECT_DIR$/CourseTableView/CourseTableView.iml" filepath="$PROJECT_DIR$/CourseTableView/CourseTableView.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CourseTableView/CourseTableView-CourseTableView.iml" filepath="$PROJECT_DIR$/CourseTableView/CourseTableView-CourseTableView.iml" />
       <module fileurl="file://$PROJECT_DIR$/CourseTableViewApp.iml" filepath="$PROJECT_DIR$/CourseTableViewApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

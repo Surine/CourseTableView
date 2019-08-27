@@ -281,7 +281,7 @@ public class CourseTableView extends LinearLayout {
             isCurWeek = bCourse.getWeek().contains(mDataConfig.getCurrentWeek());
 
             //判断课程位置的合法性
-            if(bCourse.getSectionStart() + bCourse.getSectionContinue() > mUiConfig.getMaxSection()){
+            if(bCourse.getSectionStart() + bCourse.getSectionContinue() > mUiConfig.getMaxSection() + 1){
                 throw new IllegalArgumentException("out of the section view limit");
             }
 
