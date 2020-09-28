@@ -1,3 +1,5 @@
+# 已废弃 Kotlin版本请参考：https://github.com/Surine/CourseTableView_Kt/
+
 # CourseTableViewApp - 简洁优雅的加载课程表
 
 > CourseTableView是一个开源的，简洁的，支持多种自定义属性的Android课程表控件，由于开发周期较短，所以目前仅限于实现，后期将会逐步优化性能
